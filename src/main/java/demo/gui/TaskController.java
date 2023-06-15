@@ -22,49 +22,66 @@ public class TaskController {
     private static File imageFile = null;
     private static Criteria criteria = null;
     private static SchedulingAlgorithm schedulingAlgorithm;
-    public static void setStage(Stage mainStage){
+
+    public static void setStage(Stage mainStage) {
         stage = mainStage;
     }
-    public static void setSchedulingAlgorithm(SchedulingAlgorithm algorithm){
+
+    public static void setSchedulingAlgorithm(SchedulingAlgorithm algorithm) {
         schedulingAlgorithm = algorithm;
     }
+
     public static SchedulingAlgorithm getSchedulingAlgorithm() {
         return schedulingAlgorithm;
     }
+
     public static Scene createScene() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("task-view.fxml"));
         return new Scene(fxmlLoader.load(), 429, 585);
     }
-    public static void setMainController(MainController controller){
+
+    public static void setMainController(MainController controller) {
         mainController = controller;
     }
-    @FXML private TextField taskNameTextField;
-    @FXML private TextField priorityTextField;
-    @FXML private CheckBox immediateStart;
-    @FXML private Label priorityLabel;
-    @FXML private ComboBox<String> taskTypeComboBox;
-    @FXML private ComboBox<Criteria> criteriaComboBox;
-    @FXML private CheckBox columnsCheckBox;
-    @FXML private Button chooseImageButton;
-    @FXML private ListView<ITask> tasksListView;
 
-    @FXML public void nextButtonOnAction(ActionEvent event) throws IOException {
-        if(!tasksListView.getItems().isEmpty()){
-            if(mainController != null){
+    @FXML
+    private TextField taskNameTextField;
+    @FXML
+    private TextField priorityTextField;
+    @FXML
+    private CheckBox immediateStart;
+    @FXML
+    private Label priorityLabel;
+    @FXML
+    private ComboBox<String> taskTypeComboBox;
+    @FXML
+    private ComboBox<Criteria> criteriaComboBox;
+    @FXML
+    private CheckBox columnsCheckBox;
+    @FXML
+    private Button chooseImageButton;
+    @FXML
+    private ListView<ITask> tasksListView;
+
+    @FXML
+    public void nextButtonOnAction(ActionEvent event) throws IOException {
+        if (!tasksListView.getItems().isEmpty()) {
+            if (mainController != null) {
                 mainController.setOnGui();
             }
             stage.setScene(MainController.createScene());
         }
     }
-    @FXML public void addButtonOnAction(ActionEvent event) throws IOException {
+
+    @FXML
+    public void addButtonOnAction(ActionEvent event) throws IOException {
         int priority = 0;
-        if(!priorityTextField.getText().isEmpty()){
+        if (!priorityTextField.getText().isEmpty()) {
             priority = Integer.parseInt(priorityTextField.getText());
         }
         String name = taskNameTextField.getText();
-        boolean start = immediateStart.isSelected();
         boolean column = columnsCheckBox.isSelected();
-        if(imageFile != null && criteria != null){
+        if (imageFile != null && criteria != null && imageFile.getName().split("\\.")[1].equals("bmp")) {
             ImageSorter imageSorter = new ImageSorter(imageFile.getAbsolutePath(), imageFile.getAbsoluteFile().getParent(), column, criteria, name);
             tasksListView.getItems().add(imageSorter);
             imageSorter.setPriority(priority);
@@ -72,27 +89,35 @@ public class TaskController {
             MainController.addTask(imageSorter);
         }
     }
-    @FXML public void criteriaComboBoxOnAction(ActionEvent event){
+
+    @FXML
+    public void criteriaComboBoxOnAction(ActionEvent event) {
         criteria = criteriaComboBox.getSelectionModel().getSelectedItem();
     }
-    @FXML public void chooseImageOnAction(ActionEvent event){
+
+    @FXML
+    public void chooseImageOnAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("select file");
         imageFile = fileChooser.showOpenDialog(stage);
-        if(imageFile != null){
+        if (imageFile != null) {
             chooseImageButton.setText(imageFile.getName());
         }
     }
-    @FXML public void taskTypeOnAction(ActionEvent event){
+
+    @FXML
+    public void taskTypeOnAction(ActionEvent event) {
         String selected = taskTypeComboBox.getSelectionModel().getSelectedItem();
-        if(selected.equals("ImageSorter")){
+        if (selected.equals("ImageSorter")) {
             criteriaComboBox.setVisible(true);
             columnsCheckBox.setVisible(true);
             chooseImageButton.setVisible(true);
         }
     }
-    @FXML public void initialize(){
-        if(schedulingAlgorithm instanceof FifoSchedulingAlgorithm fifoSchedulingAlgorithm){
+
+    @FXML
+    public void initialize() {
+        if (schedulingAlgorithm instanceof FifoSchedulingAlgorithm) {
             priorityLabel.setVisible(false);
             priorityTextField.setVisible(false);
         }

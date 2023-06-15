@@ -34,7 +34,8 @@ public class ImageSorter implements ITask {
 
     private final Criteria criteria;
     public ImageSorter(String sourcePath, String destPath, boolean column, Criteria criteria, String name) throws IOException {
-        image = ImageIO.read(new File(sourcePath));
+        File file = new File(sourcePath);
+        image = ImageIO.read(file);
         this.destPath = destPath;
         this.criteria = criteria;
         this.column = column;
@@ -46,22 +47,10 @@ public class ImageSorter implements ITask {
     }
     @Override
     public void run(TaskContext taskContext) {
+        int width = image.getWidth();
+        int height = image.getHeight();
 
-        for(int i = 0; i < 10; ++i){
-            progress += 0.1;
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                taskContext.checkForPause();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
-
     @Override
     public double getProgress() {
         return progress;

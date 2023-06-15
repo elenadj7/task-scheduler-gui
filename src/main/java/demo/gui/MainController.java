@@ -47,7 +47,7 @@ public class MainController {
     }
 
     public static Scene createScene() throws IOException {
-        if(scene == null){
+        if (scene == null) {
             FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("main-view.fxml"));
             scene = new Scene(fxmlLoader.load(), 699, 391);
         }
@@ -55,13 +55,17 @@ public class MainController {
     }
 
 
-    @FXML private AnchorPane pane;
-    @FXML public void newTaskButtonOnAction(ActionEvent event) throws IOException {
+    @FXML
+    private AnchorPane pane;
+
+    @FXML
+    public void newTaskButtonOnAction(ActionEvent event) throws IOException {
         TaskController.setMainController(this);
         stage.setScene(TaskController.createScene());
     }
 
-    @FXML public void initialize(){
+    @FXML
+    public void initialize() {
         taskScheduler = new TaskScheduler(TaskController.getSchedulingAlgorithm(), StartController.getMaxTasks());
         setOnGui();
     }
@@ -82,12 +86,13 @@ public class MainController {
             progressBar.setPrefWidth(200);
             progressBar.setLayoutX(114);
             progressBar.setLayoutY(40 + space);
+            progressBar.setStyle("-fx-accent: green;");
             progress.addLast(progressBar);
             Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), event -> {
                 progressBar.setProgress(t.getProgress());
             }));
-            timeline.setCycleCount(Animation.INDEFINITE); // Ponavlja animaciju beskonačno
-            timeline.play(); // Pokreće animaciju
+            timeline.setCycleCount(Animation.INDEFINITE);
+            timeline.play();
             pane.getChildren().add(progressBar);
 
             Button button1 = new Button();
@@ -136,33 +141,30 @@ public class MainController {
             pane.getChildren().add(label2);
 
             Task tmp = null;
-            if(t.getImmediateStart()){
+            if (t.getImmediateStart()) {
                 tmp = taskScheduler.schedule(t, t.getPriority());
-            }
-            else {
+            } else {
                 tmp = taskScheduler.scheduleWithoutStarting(t, t.getPriority());
             }
 
-            if(tmp != null){
+            if (tmp != null) {
                 label2.setText(tmp.getTaskContext().getTaskState().toString());
                 Task finalTmp = tmp;
                 button1.setOnAction(event -> {
-                    if(finalTmp.getTaskContext().getTaskState().equals(TaskState.NOTSTARTED)){
+                    if (finalTmp.getTaskContext().getTaskState().equals(TaskState.NOTSTARTED)) {
                         finalTmp.start(taskScheduler);
-                    }
-                    else {
+                    } else {
                         finalTmp.requestContinue();
                     }
                     label2.setText(finalTmp.getTaskContext().getTaskState().toString());
                 });
 
                 button2.setOnAction(event -> {
-                    try{
+                    try {
                         finalTmp.requestPause();
                         label2.setText(finalTmp.getTaskContext().getTaskState().toString());
-                    }
-                    catch (IllegalStateException e){
-                        System.out.println("Task not started");
+                    } catch (IllegalStateException e) {
+                        System.out.println(e.getMessage());
                     }
                 });
 
@@ -171,15 +173,15 @@ public class MainController {
                         finalTmp.stop();
                         label2.setText(finalTmp.getTaskContext().getTaskState().toString());
                     } catch (IllegalStateException e) {
-                        System.out.println("Button3 exception...");
+                        System.out.println(e.getMessage());
                     }
                 });
 
                 Timeline timeline2 = new Timeline(new KeyFrame(Duration.millis(100), event -> {
                     label2.setText(finalTmp.getTaskContext().getTaskState().toString());
                 }));
-                timeline2.setCycleCount(Animation.INDEFINITE); // Ponavlja animaciju beskonačno
-                timeline2.play(); // Pokreće animaciju
+                timeline2.setCycleCount(Animation.INDEFINITE);
+                timeline2.play();
                 statesTimeline.addLast(timeline2);
             }
 
