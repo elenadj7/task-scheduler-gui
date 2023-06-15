@@ -1,16 +1,15 @@
 package demo.gui;
 
-import demo.gui.tasks.ImageSorter;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,24 +23,20 @@ import task.scheduler.tasks.TaskState;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 public class MainController {
     private static Stage stage;
-    private static boolean priority = false;
+    private static Scene scene = null;
     private static TaskScheduler taskScheduler;
     private static final LinkedList<ITask> tasks = new LinkedList<>();
-    private static final LinkedList<Task> scheduled = new LinkedList<>();
     public static final LinkedList<ProgressBar> progress = new LinkedList<>();
     private static final LinkedList<Button> play = new LinkedList<>();
     private static final LinkedList<Button> pause = new LinkedList<>();
     private static final LinkedList<Button> stop = new LinkedList<>();
     private static final LinkedList<Label> states = new LinkedList<>();
     private static final LinkedList<Timeline> statesTimeline = new LinkedList<>();
+    private static int space = 0;
 
     public static void setStage(Stage mainStage) {
         stage = mainStage;
@@ -52,18 +47,27 @@ public class MainController {
     }
 
     public static Scene createScene() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("main-view.fxml"));
-        return new Scene(fxmlLoader.load(), 699, 391);
+        if(scene == null){
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("main-view.fxml"));
+            scene = new Scene(fxmlLoader.load(), 699, 391);
+        }
+        return scene;
     }
 
-    @FXML
-    private AnchorPane pane;
 
-    @FXML
-    public void initialize() {
+    @FXML private AnchorPane pane;
+    @FXML public void newTaskButtonOnAction(ActionEvent event) throws IOException {
+        TaskController.setMainController(this);
+        stage.setScene(TaskController.createScene());
+    }
 
+    @FXML public void initialize(){
         taskScheduler = new TaskScheduler(TaskController.getSchedulingAlgorithm(), StartController.getMaxTasks());
-        int space = 0;
+        setOnGui();
+    }
+
+    public void setOnGui() {
+
         String path = System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "demo" + File.separator + "gui" + File.separator + "buttons" + File.separator;
         for (ITask t : tasks) {
             Label label = new Label(t.toString());
@@ -134,11 +138,9 @@ public class MainController {
             Task tmp = null;
             if(t.getImmediateStart()){
                 tmp = taskScheduler.schedule(t, t.getPriority());
-                scheduled.add(tmp);
             }
             else {
                 tmp = taskScheduler.scheduleWithoutStarting(t, t.getPriority());
-                scheduled.add(tmp);
             }
 
             if(tmp != null){
@@ -166,9 +168,9 @@ public class MainController {
 
                 button3.setOnAction(event -> {
                     try {
-                        finalTmp.waitToExecute();
+                        finalTmp.stop();
                         label2.setText(finalTmp.getTaskContext().getTaskState().toString());
-                    } catch (InterruptedException | IllegalStateException e) {
+                    } catch (IllegalStateException e) {
                         System.out.println("Button3 exception...");
                     }
                 });
@@ -183,5 +185,6 @@ public class MainController {
 
             space += 28;
         }
+        tasks.clear();
     }
 }

@@ -1,4 +1,4 @@
-module task.scheduler.gui {
+module demo.gui {
     requires javafx.controls;
     requires javafx.fxml;
     requires task.scheduler;

@@ -18,6 +18,7 @@ import java.io.IOException;
 
 public class TaskController {
     private static Stage stage;
+    private static MainController mainController;
     private static File imageFile = null;
     private static Criteria criteria = null;
     private static SchedulingAlgorithm schedulingAlgorithm;
@@ -34,7 +35,9 @@ public class TaskController {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("task-view.fxml"));
         return new Scene(fxmlLoader.load(), 429, 585);
     }
-
+    public static void setMainController(MainController controller){
+        mainController = controller;
+    }
     @FXML private TextField taskNameTextField;
     @FXML private TextField priorityTextField;
     @FXML private CheckBox immediateStart;
@@ -47,7 +50,9 @@ public class TaskController {
 
     @FXML public void nextButtonOnAction(ActionEvent event) throws IOException {
         if(!tasksListView.getItems().isEmpty()){
-            //MainController.addTasks(tasksListView);
+            if(mainController != null){
+                mainController.setOnGui();
+            }
             stage.setScene(MainController.createScene());
         }
     }
