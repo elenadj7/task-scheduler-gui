@@ -88,7 +88,7 @@ public class MainController {
             progressBar.setLayoutY(40 + space);
             progressBar.setStyle("-fx-accent: green;");
             progress.addLast(progressBar);
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), event -> {
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50), event -> {
                 progressBar.setProgress(t.getProgress());
             }));
             timeline.setCycleCount(Animation.INDEFINITE);
@@ -177,7 +177,7 @@ public class MainController {
                     }
                 });
 
-                Timeline timeline2 = new Timeline(new KeyFrame(Duration.millis(100), event -> {
+                Timeline timeline2 = new Timeline(new KeyFrame(Duration.millis(50), event -> {
                     label2.setText(finalTmp.getTaskContext().getTaskState().toString());
                 }));
                 timeline2.setCycleCount(Animation.INDEFINITE);
