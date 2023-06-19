@@ -76,6 +76,11 @@ public class ImageSorter implements ITask {
         }
 
         progress += 0.1;
+        try {
+            taskContext.checkForPause();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         if(column){
 
